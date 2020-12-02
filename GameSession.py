@@ -2,23 +2,44 @@ from Tile import Tile, TileType, TileStatus
 import tkinter as tk
 import random
 from functools import partial
+from enum import Enum
+
+
+class DifficultyLevel(Enum):
+    EASY = 0
+    MEDIUM = 1
+    HARD = 2
 
 
 class GameSession:
-    def __init__(self, window):
-        self.board = None
+    def __init__(self, window, difficulty):
         self.window = window
         self.frm_board = tk.Frame(window)
         self.frm_board.pack()
+
+        self.board = None
+
+        if difficulty is DifficultyLevel.EASY:
+            self.num_rows = 9
+            self.num_cols = 9
+            self.num_mines = 10
+        elif difficulty is DifficultyLevel.MEDIUM:
+            self.num_rows = 16
+            self.num_cols = 16
+            self.num_mines = 40
+        else:
+            self.num_rows = 16
+            self.num_cols = 30
+            self.num_mines = 90
 
         self.is_mines_inited = False
 
         self.__setup()
 
     def __setup(self):
-        self.board = [[0 for j in range(9)] for i in range(9)]
-        for y in range(9):
-            for x in range(9):
+        self.board = [[0 for j in range(self.num_cols)] for i in range(self.num_rows)]
+        for y in range(self.num_rows):
+            for x in range(self.num_cols):
                 tile = Tile(self.frm_board, x, y)
                 tile.button.grid(row=y, column=x)
 
@@ -62,19 +83,19 @@ class GameSession:
 
     def __init_mines(self, n_x, n_y):
         self.is_mines_inited = True
-        mines_left = 9
+        mines_left = self.num_mines
 
         while mines_left != 0:
-            x = random.randint(0, 9 - 1)
-            y = random.randint(0, 9 - 1)
+            x = random.randint(0, self.num_cols - 1)
+            y = random.randint(0, self.num_rows - 1)
             if x == n_x and y == n_y:
                 pass
             elif self.board[y][x].type == TileType.NOT_DETERMINED:
                 self.board[y][x].type = TileType.MINE
                 mines_left -= 1
 
-        for y in range(9):
-            for x in range(9):
+        for y in range(self.num_rows):
+            for x in range(self.num_cols):
                 tile = self.board[y][x]
                 if tile.type != TileType.MINE:
                     tile.type = TileType.CLEAR
@@ -103,7 +124,7 @@ class GameSession:
         tiles = []
         for d in directions:
             cx, cy = x + d[0], y + d[1]
-            if 0 <= cy < 9:
-                if 0 <= cx < 9:
+            if 0 <= cy < self.num_rows:
+                if 0 <= cx < self.num_cols:
                     tiles.append(self.board[cy][cx])
         return tiles
