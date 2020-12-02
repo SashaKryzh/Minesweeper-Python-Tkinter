@@ -26,7 +26,7 @@ class Tile:
 
         self.status = TileStatus.CLEAR
         self.coords = x, y
-        self.button = tk.Button(frame, image=self.images['plain'])
+        self.button = tk.Label(frame, image=self.images['plain'], bd=1)
 
     def open(self):
         self.is_opened = True
@@ -39,8 +39,8 @@ class Tile:
             image = self.images['clicked']
         self.button.configure(image=image)
 
-    def change_status(self):
-        self.status = (self.status + 1) % 3
+    def change_status(self, status):
+        self.status = status
         if self.status == TileStatus.CLEAR:
             image = self.images['plain']
         elif self.status == TileStatus.PROBABLY:

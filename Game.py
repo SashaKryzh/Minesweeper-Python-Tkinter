@@ -27,6 +27,7 @@ class Game:
         f.pack(fill=tk.NONE, expand=True)
 
     def __start_game(self, difficulty):
+        self.frm_select_difficulty.pack_forget()
         self.frm_select_difficulty.destroy()
         self.game_session = GameSession(self.window, difficulty=difficulty)
 

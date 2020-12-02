@@ -3,6 +3,7 @@ import tkinter as tk
 import random
 from functools import partial
 from enum import Enum
+from GameStatsWidget import GameStatsWidgets
 
 
 class DifficultyLevel(Enum):
@@ -14,11 +15,6 @@ class DifficultyLevel(Enum):
 class GameSession:
     def __init__(self, window, difficulty):
         self.window = window
-        self.frm_board = tk.Frame(window)
-        self.frm_board.pack()
-
-        self.board = None
-
         if difficulty is DifficultyLevel.EASY:
             self.num_rows = 9
             self.num_cols = 9
@@ -32,7 +28,18 @@ class GameSession:
             self.num_cols = 30
             self.num_mines = 90
 
+        self.frm_board = tk.Frame(window)
+        self.frm_board.pack()
+
+        self.frm_stats = tk.Frame(window)
+        self.stats = GameStatsWidgets(self.frm_stats, self.num_mines)
+        self.frm_stats.pack()
+
+        self.board = None
         self.is_mines_inited = False
+
+        self.flags_left = self.num_mines
+        self.flags_correct = 0
 
         self.__setup()
 
@@ -41,7 +48,7 @@ class GameSession:
         for y in range(self.num_rows):
             for x in range(self.num_cols):
                 tile = Tile(self.frm_board, x, y)
-                tile.button.grid(row=y, column=x)
+                tile.button.grid(row=y, column=x, padx=0, pady=0, sticky="nsew")
 
                 act_on_left_tap = partial(self.__on_lft_btn_tap, x, y)
                 act_on_right_tap = partial(self.__on_rgt_btn_tap, x, y)
@@ -59,7 +66,26 @@ class GameSession:
         self.__open_tile(x, y)
 
     def __on_rgt_btn_tap(self, x, y, event=None):
-        self.board[y][x].change_status()
+        tile = self.board[y][x]
+        if tile.status == TileStatus.CLEAR:
+            tile.change_status(TileStatus.PROBABLY)
+
+        elif tile.status == TileStatus.PROBABLY:
+            if self.flags_left != 0:
+                tile.change_status(TileStatus.SURE)
+                self.flags_left -= 1
+                self.flags_correct += tile.type == TileType.MINE
+                if self.flags_correct == self.num_mines:
+                    print('YOU WIN')
+                self.stats.update(self.flags_left)
+            else:
+                tile.change_status(TileStatus.CLEAR)
+
+        else:
+            tile.change_status(TileStatus.CLEAR)
+            self.flags_left += 1
+            self.flags_correct -= tile.type == TileType.MINE
+            self.stats.update(self.flags_left)
 
     def __open_tile(self, x, y):
         # To prevent open when auto opening free of mines field
