@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from game_session import GameSession
+from GameSession import GameSession
 
 
 class Game:

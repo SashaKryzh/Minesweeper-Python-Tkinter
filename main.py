@@ -1,5 +1,5 @@
 import tkinter as tk
-from game import Game
+from Game import Game
 
 
 def main(name):

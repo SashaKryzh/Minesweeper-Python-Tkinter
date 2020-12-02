@@ -1,4 +1,4 @@
-from tile import Tile, TileType, TileStatus
+from Tile import Tile, TileType, TileStatus
 import tkinter as tk
 import random
 from functools import partial
