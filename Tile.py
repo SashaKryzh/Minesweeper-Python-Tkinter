@@ -28,11 +28,18 @@ class Tile:
         self.coords = x, y
         self.button = tk.Label(frame, image=self.images['plain'], bd=1)
 
-    def open(self):
+    def open(self, is_safe=False):
+        """
+        :param is_safe: if True - mines will not detonate
+        """
         self.is_opened = True
 
         if self.type == TileType.MINE:
-            image = self.images['mine']
+            if is_safe:
+                image = self.images['mine']
+            else:
+                # TODO: detonated mine
+                image = self.images['mine']
         elif self.mines_around != 0:
             image = self.images['numbers'][self.mines_around - 1]
         else:
@@ -44,7 +51,7 @@ class Tile:
         if self.status == TileStatus.CLEAR:
             image = self.images['plain']
         elif self.status == TileStatus.PROBABLY:
-            # TODO: image !!!
+            # TODO: question image !!!
             self.button.configure(text='?', image='')
             return
         else:
