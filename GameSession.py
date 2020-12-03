@@ -124,7 +124,9 @@ class GameSession:
         for row in self.board:
             for tile in row:
                 self.__unbind_tile(tile)
-                if tile.type is TileType.MINE and tile.status is not TileStatus.SURE:
+                if tile.is_opened:
+                    pass
+                elif tile.type is TileType.MINE and tile.status is not TileStatus.SURE:
                     tile.open(is_safe=True)
                 elif tile.type is not TileType.MINE and tile.status is TileStatus.SURE:
                     tile.wrong_flag()

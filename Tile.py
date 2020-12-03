@@ -38,8 +38,7 @@ class Tile:
             if is_safe:
                 image = self.images['mine']
             else:
-                # TODO: detonated mine
-                image = self.images['mine']
+                image = self.images['detonated']
         elif self.mines_around != 0:
             image = self.images['numbers'][self.mines_around - 1]
         else:
@@ -51,9 +50,7 @@ class Tile:
         if self.status == TileStatus.CLEAR:
             image = self.images['plain']
         elif self.status == TileStatus.PROBABLY:
-            # TODO: question image !!!
-            self.button.configure(text='?', image='')
-            return
+            image = self.images['question']
         else:
             image = self.images['flag']
         self.button.configure(image=image)
