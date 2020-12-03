@@ -125,7 +125,9 @@ class GameSession:
             for tile in row:
                 self.__unbind_tile(tile)
                 if tile.type is TileType.MINE and tile.status is not TileStatus.SURE:
-                    tile.open()
+                    tile.open(is_safe=True)
+                elif tile.type is not TileType.MINE and tile.status is TileStatus.SURE:
+                    tile.wrong_flag()
 
     def __end_on_success(self):
         print('YOU WIN')
@@ -133,7 +135,7 @@ class GameSession:
             for tile in row:
                 self.__unbind_tile(tile)
                 if tile.status is not TileStatus.SURE:
-                    tile.open()
+                    tile.open(is_safe=True)
 
     def __init_mines(self, n_x, n_y):
         self.is_mines_inited = True

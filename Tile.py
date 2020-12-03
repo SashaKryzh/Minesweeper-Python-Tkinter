@@ -57,3 +57,7 @@ class Tile:
         else:
             image = self.images['flag']
         self.button.configure(image=image)
+
+    def wrong_flag(self):
+        image = self.images['wrong']
+        self.button.configure(image=image)
