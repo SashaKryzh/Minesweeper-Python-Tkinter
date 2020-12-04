@@ -16,6 +16,8 @@ class DifficultyLevel(Enum):
 class GameSession:
     def __init__(self, master, difficulty, on_end):
         self.master = master
+
+        self.difficulty = difficulty
         if difficulty is DifficultyLevel.EASY:
             self.num_rows = 9
             self.num_cols = 9
@@ -149,7 +151,7 @@ class GameSession:
                     tile.open(is_safe=True)
                 elif tile.type is not TileType.MINE and tile.status is TileStatus.SURE:
                     tile.wrong_flag()
-        self.on_end([False, self.seconds_elapsed])
+        self.on_end(self.difficulty, False, time.gmtime(self.seconds_elapsed))
 
     def __end_on_success(self):
         for row in self.board:
@@ -157,7 +159,7 @@ class GameSession:
                 self.__unbind_tile(tile)
                 if tile.status is not TileStatus.SURE:
                     tile.open(is_safe=True)
-        self.on_end([True, self.seconds_elapsed])
+        self.on_end(self.difficulty, True, time.gmtime(self.seconds_elapsed))
 
     def __init_mines(self, n_x, n_y):
         self.is_mines_inited = True

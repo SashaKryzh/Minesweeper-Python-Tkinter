@@ -2,6 +2,7 @@ import time
 import tkinter as tk
 
 from GameSession import GameSession, DifficultyLevel
+from Screens import Screens
 
 
 class Game:
@@ -9,51 +10,49 @@ class Game:
         self.window = window
         self.window.protocol('WM_DELETE_WINDOW', self.__window_deleted)
 
-        # Select difficulty
-        self.frm_select_difficulty = None
+        self.frame = None
 
-        # Game session
         self.game_session = None
-        self.frm_game_session = None
 
-        # End of game
+        self.__home_screen()
 
-        self.__select_difficulty()
+    def __home_screen(self):
+        if self.frame is not None:
+            self.frame.destroy()
+        self.frame = tk.Frame(self.window)
+        Screens.home_scr(self.frame,
+                         on_new_game=self.__select_difficulty,
+                         on_continue=self.__on_continue,
+                         on_leaderboard=self.__on_leaderboard,
+                         on_exit=self.__on_exit,
+                         )
 
     def __select_difficulty(self):
-        f = tk.Frame(self.window)
-        self.frm_select_difficulty = f
+        self.frame.destroy()
+        self.frame = tk.Frame(self.window)
+        Screens.sel_difficulty_scr(self.frame, self.__start_game)
 
-        btn_e = tk.Button(f, text='Новачок', command=lambda: self.__start_game(DifficultyLevel.EASY))
-        btn_m = tk.Button(f, text='Любитель', command=lambda: self.__start_game(DifficultyLevel.MEDIUM))
-        btn_h = tk.Button(f, text='Професіонал', command=lambda: self.__start_game(DifficultyLevel.HARD))
+    def __on_continue(self):
+        print('continue')
 
-        btn_e.pack()
-        btn_m.pack()
-        btn_h.pack()
-        f.pack(fill=tk.NONE, expand=True)
+    def __on_leaderboard(self):
+        print('leaderboard')
+
+    def __on_exit(self):
+        self.__window_deleted()
 
     def __start_game(self, difficulty):
-        self.frm_select_difficulty.pack_forget()
-        self.frm_select_difficulty.destroy()
+        self.frame.destroy()
+        self.frame = tk.Frame(self.window)
+        self.frame.pack()
+        self.game_session = GameSession(self.frame, difficulty=difficulty, on_end=self.__end_of_game)
 
-        self.frm_game_session = tk.Frame(self.window)
-        self.frm_game_session.pack()
-        self.game_session = GameSession(self.frm_game_session, difficulty=difficulty, on_end=self.__end_of_game)
-
-    def __end_of_game(self, stats):
-        """
-        :param stats: [is_win (TRUE / FALSE), seconds elapsed (int)]
-        """
-        self.frm_game_session.pack_forget()
-        self.frm_game_session.destroy()
-
-
-
-        print('WIN' if stats[0] else 'LOSE')
-        print(time.gmtime(stats[1]))
-
-
+    def __end_of_game(self, difficulty, is_win, time_elapsed):
+        self.frame.destroy()
+        self.frame = tk.Frame(self.window)
+        if is_win:
+            self.save_result(difficulty, time_elapsed)
+        Screens.end_of_game_scr(self.frame, is_win, time_elapsed, self.__home_screen)
 
     def __window_deleted(self):
         print('Closing')
