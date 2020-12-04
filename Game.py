@@ -1,3 +1,4 @@
+import time
 import tkinter as tk
 
 from GameSession import GameSession, DifficultyLevel
@@ -8,8 +9,14 @@ class Game:
         self.window = window
         self.window.protocol('WM_DELETE_WINDOW', self.__window_deleted)
 
-        self.game_session = None
+        # Select difficulty
         self.frm_select_difficulty = None
+
+        # Game session
+        self.game_session = None
+        self.frm_game_session = None
+
+        # End of game
 
         self.__select_difficulty()
 
@@ -29,7 +36,24 @@ class Game:
     def __start_game(self, difficulty):
         self.frm_select_difficulty.pack_forget()
         self.frm_select_difficulty.destroy()
-        self.game_session = GameSession(self.window, difficulty=difficulty)
+
+        self.frm_game_session = tk.Frame(self.window)
+        self.frm_game_session.pack()
+        self.game_session = GameSession(self.frm_game_session, difficulty=difficulty, on_end=self.__end_of_game)
+
+    def __end_of_game(self, stats):
+        """
+        :param stats: [is_win (TRUE / FALSE), seconds elapsed (int)]
+        """
+        self.frm_game_session.pack_forget()
+        self.frm_game_session.destroy()
+
+
+
+        print('WIN' if stats[0] else 'LOSE')
+        print(time.gmtime(stats[1]))
+
+
 
     def __window_deleted(self):
         print('Closing')

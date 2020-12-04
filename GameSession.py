@@ -4,6 +4,7 @@ import random
 from functools import partial
 from enum import Enum
 from GameStatsWidget import GameStatsWidgets
+import time
 
 
 class DifficultyLevel(Enum):
@@ -13,8 +14,8 @@ class DifficultyLevel(Enum):
 
 
 class GameSession:
-    def __init__(self, window, difficulty):
-        self.window = window
+    def __init__(self, master, difficulty, on_end):
+        self.master = master
         if difficulty is DifficultyLevel.EASY:
             self.num_rows = 9
             self.num_cols = 9
@@ -34,10 +35,18 @@ class GameSession:
             self.num_cols = 4
             self.num_mines = 2
 
-        self.frm_board = tk.Frame(window)
+        self.on_end = on_end
+
+        self.seconds_elapsed = 0
+        self.lbl_time = None
+        self.frm_time = tk.Frame(master)
+        self.frm_time.pack()
+        self.__time_widget()
+
+        self.frm_board = tk.Frame(master)
         self.frm_board.pack()
 
-        self.frm_stats = tk.Frame(window)
+        self.frm_stats = tk.Frame(master)
         self.stats = GameStatsWidgets(self.frm_stats, self.num_mines)
         self.frm_stats.pack()
 
@@ -48,6 +57,17 @@ class GameSession:
         self.flags_correct = 0
 
         self.__setup()
+
+    def __time_widget(self):
+        def update_time():
+            string = time.strftime('%M:%S', time.gmtime(self.seconds_elapsed))
+            self.lbl_time.configure(text=string)
+            self.seconds_elapsed += 1
+            self.lbl_time.after(1000, update_time)
+
+        self.lbl_time = tk.Label(self.frm_time)
+        self.lbl_time.pack()
+        update_time()
 
     def __setup(self):
         self.board = [[0 for j in range(self.num_cols)] for i in range(self.num_rows)]
@@ -120,7 +140,6 @@ class GameSession:
         tile.button.unbind('<Button-3>')
 
     def __end_on_mine(self):
-        print('YOU LOSE')
         for row in self.board:
             for tile in row:
                 self.__unbind_tile(tile)
@@ -130,14 +149,15 @@ class GameSession:
                     tile.open(is_safe=True)
                 elif tile.type is not TileType.MINE and tile.status is TileStatus.SURE:
                     tile.wrong_flag()
+        self.on_end([False, self.seconds_elapsed])
 
     def __end_on_success(self):
-        print('YOU WIN')
         for row in self.board:
             for tile in row:
                 self.__unbind_tile(tile)
                 if tile.status is not TileStatus.SURE:
                     tile.open(is_safe=True)
+        self.on_end([True, self.seconds_elapsed])
 
     def __init_mines(self, n_x, n_y):
         self.is_mines_inited = True
