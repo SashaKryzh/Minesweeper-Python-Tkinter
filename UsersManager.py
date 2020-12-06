@@ -25,11 +25,13 @@ class UsersManager:
             password_match = user.password == password
             if password_match:
                 self.current_user = user
+                print('Logged')
                 return self.current_user
             else:
                 return 'Wrong password'
         else:
             self.current_user = self.__new_user(login, password)
+            print('New user')
             return self.current_user
 
     def __new_user(self, login, password):

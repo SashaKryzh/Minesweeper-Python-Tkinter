@@ -1,4 +1,6 @@
 import tkinter as tk
+from tkinter import messagebox
+from User import User
 
 
 class LoginScreen:
@@ -36,6 +38,11 @@ class LoginScreen:
         password = self.ent_password.get()
         print('login: "{}" - password: "{}"'.format(login, password))
         if login == '' or password == '':
-            print('ERROR')
+            messagebox.showerror('Login', 'Fields can\'t be empty')
             return
-        result = self.auth.sign_in(login, password)
+        res = self.auth.sign_in(login, password)
+        if isinstance(res, User):
+            self.on_logged()
+        else:
+            messagebox.showerror('Login', res)
+
