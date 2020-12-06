@@ -4,12 +4,15 @@ import tkinter as tk
 from GameSession import GameSession, DifficultyLevel
 from LoginScreen import LoginScreen
 from Screens import Screens
+from UsersManager import UsersManager
 
 
 class Game:
     def __init__(self, window):
         self.window = window
         self.window.protocol('WM_DELETE_WINDOW', self.__window_deleted)
+
+        self.auth = UsersManager()
 
         self.frame = None
 
@@ -19,7 +22,7 @@ class Game:
 
     def __login(self):
         self.frame = tk.Frame(self.window)
-        LoginScreen(self.frame, on_logged=self.__home_screen)
+        LoginScreen(self.frame, self.auth, on_logged=self.__home_screen)
 
     def __home_screen(self):
         self.frame.destroy()

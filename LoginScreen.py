@@ -2,8 +2,9 @@ import tkinter as tk
 
 
 class LoginScreen:
-    def __init__(self, master, on_logged):
+    def __init__(self, master, auth, on_logged):
         self.master = master
+        self.auth = auth
         self.on_logged = on_logged
 
         self.ent_login = None
@@ -33,4 +34,8 @@ class LoginScreen:
     def __on_login_tap(self):
         login = self.ent_login.get()
         password = self.ent_password.get()
-        print(login + ' ' + password)
+        print('login: "{}" - password: "{}"'.format(login, password))
+        if login == '' or password == '':
+            print('ERROR')
+            return
+        result = self.auth.sign_in(login, password)
