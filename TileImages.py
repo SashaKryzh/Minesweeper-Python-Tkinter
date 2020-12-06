@@ -1,5 +1,4 @@
 from SingletonMeta import SingletonMeta
-import tkinter as tk
 from PIL import Image, ImageTk
 
 
@@ -22,3 +21,9 @@ class TileImages(metaclass=SingletonMeta):
 
     def __open_image(self, path):
         return ImageTk.PhotoImage(Image.open(path).resize((self.image_size, self.image_size)))
+
+    def get(self, name, idx=None):
+        if name == 'numbers':
+            return self.images[name][idx]
+        else:
+            return self.images[name]

@@ -5,6 +5,7 @@ from functools import partial
 from enum import Enum
 from GameStatsWidget import GameStatsWidgets
 import time
+from tkinter import messagebox
 
 
 class DifficultyLevel(Enum):
@@ -14,10 +15,9 @@ class DifficultyLevel(Enum):
 
 
 class GameSession:
-    def __init__(self, master, difficulty, on_end):
-        self.master = master
-
+    def __init__(self, difficulty):
         self.difficulty = difficulty
+
         if difficulty is DifficultyLevel.EASY:
             self.num_rows = 9
             self.num_cols = 9
@@ -31,60 +31,87 @@ class GameSession:
             self.num_cols = 30
             self.num_mines = 90
 
-        # For testing purposes
+        # For testing
         if True:
             self.num_rows = 4
             self.num_cols = 4
             self.num_mines = 2
 
-        self.on_end = on_end
+        self.board = None
 
         self.seconds_elapsed = 0
-        self.lbl_time = None
-        self.frm_time = tk.Frame(master)
-        self.frm_time.pack()
-        self.__time_widget()
-
-        self.frm_board = tk.Frame(master)
-        self.frm_board.pack()
-
-        self.frm_stats = tk.Frame(master)
-        self.stats = GameStatsWidgets(self.frm_stats, self.num_mines)
-        self.frm_stats.pack()
-
-        self.board = None
         self.is_mines_inited = False
-
         self.flags_left = self.num_mines
         self.flags_correct = 0
 
-        self.__setup()
+        self.wdg_stats = None
 
-    def __time_widget(self):
+        self.master = None
+        self.on_end = None
+        self.on_stop = None
+
+    def clear_tk(self):
+        self.master = None
+        self.on_end = None
+        self.on_stop = None
+        self.wdg_stats = None
+        for row in self.board:
+            for tile in row:
+                tile.clear_tk()
+
+    def start(self, master, on_end, on_stop):
+        self.master = master
+        self.on_end = on_end
+        self.on_stop = on_stop
+
+        self.__top_widget()
+        self.__board_widget()
+        self.__stats_widget()
+
+    def __top_widget(self):
         def update_time():
             string = time.strftime('%M:%S', time.gmtime(self.seconds_elapsed))
-            self.lbl_time.configure(text=string)
+            lbl_time.configure(text=string)
             self.seconds_elapsed += 1
-            self.lbl_time.after(1000, update_time)
+            lbl_time.after(1000, update_time)
 
-        self.lbl_time = tk.Label(self.frm_time)
-        self.lbl_time.pack()
+        f = tk.Frame(self.master)
+        f.pack()
+
+        btn_exit = tk.Button(f, text='Exit', command=self.__on_exit)
+        btn_exit.pack()
+
+        lbl_time = tk.Label(f)
+        lbl_time.pack()
         update_time()
 
-    def __setup(self):
-        self.board = [[0 for j in range(self.num_cols)] for i in range(self.num_rows)]
+    def __board_widget(self):
+        frm_board = tk.Frame(self.master)
+        frm_board.pack()
+
+        if self.board is None:
+            self.board = [[0 for j in range(self.num_cols)] for i in range(self.num_rows)]
+
         for y in range(self.num_rows):
             for x in range(self.num_cols):
-                tile = Tile(self.frm_board, x, y)
-                tile.button.grid(row=y, column=x, padx=0, pady=0, sticky="nsew")
+                if self.board[y][x] == 0:
+                    tile = Tile(x, y)
+                    self.board[y][x] = tile
+                else:
+                    tile = self.board[y][x]
 
+                tile.init_button(frm_board)
+                tile.button.grid(row=y, column=x, padx=0, pady=0, sticky="nsew")
                 act_on_left_tap = partial(self.__on_lft_btn_tap, x, y)
                 act_on_right_tap = partial(self.__on_rgt_btn_tap, x, y)
                 tile.button.bind('<Button-1>', act_on_left_tap)
                 tile.button.bind('<Button-2>', act_on_right_tap)
                 tile.button.bind('<Button-3>', act_on_right_tap)
 
-                self.board[y][x] = tile
+    def __stats_widget(self):
+        frm_stats = tk.Frame(self.master)
+        frm_stats.pack()
+        self.wdg_stats = GameStatsWidgets(frm_stats, self.num_mines, self.flags_left)
 
     def __on_lft_btn_tap(self, x, y, event=None):
         if self.board[y][x].status != TileStatus.CLEAR:
@@ -105,7 +132,7 @@ class GameSession:
                 self.flags_correct += tile.type == TileType.MINE
                 if self.flags_correct == self.num_mines:
                     self.__end_on_success()
-                self.stats.update(self.flags_left)
+                self.wdg_stats.update(self.flags_left)
             else:
                 tile.change_status(TileStatus.CLEAR)
 
@@ -113,7 +140,7 @@ class GameSession:
             tile.change_status(TileStatus.CLEAR)
             self.flags_left += 1
             self.flags_correct -= tile.type == TileType.MINE
-            self.stats.update(self.flags_left)
+            self.wdg_stats.update(self.flags_left)
 
     def __open_tile(self, x, y):
         tile = self.board[y][x]
@@ -140,26 +167,6 @@ class GameSession:
         tile.button.unbind('<Button-1>')
         tile.button.unbind('<Button-2>')
         tile.button.unbind('<Button-3>')
-
-    def __end_on_mine(self):
-        for row in self.board:
-            for tile in row:
-                self.__unbind_tile(tile)
-                if tile.is_opened:
-                    pass
-                elif tile.type is TileType.MINE and tile.status is not TileStatus.SURE:
-                    tile.open(is_safe=True)
-                elif tile.type is not TileType.MINE and tile.status is TileStatus.SURE:
-                    tile.wrong_flag()
-        self.on_end(self.difficulty, False, time.gmtime(self.seconds_elapsed))
-
-    def __end_on_success(self):
-        for row in self.board:
-            for tile in row:
-                self.__unbind_tile(tile)
-                if tile.status is not TileStatus.SURE:
-                    tile.open(is_safe=True)
-        self.on_end(self.difficulty, True, time.gmtime(self.seconds_elapsed))
 
     def __init_mines(self, n_x, n_y):
         self.is_mines_inited = True
@@ -208,3 +215,27 @@ class GameSession:
                 if 0 <= cx < self.num_cols:
                     tiles.append(self.board[cy][cx])
         return tiles
+
+    def __end_on_mine(self):
+        for row in self.board:
+            for tile in row:
+                self.__unbind_tile(tile)
+                if tile.is_opened:
+                    pass
+                elif tile.type is TileType.MINE and tile.status is not TileStatus.SURE:
+                    tile.open(is_safe=True)
+                elif tile.type is not TileType.MINE and tile.status is TileStatus.SURE:
+                    tile.wrong_flag()
+        self.on_end(self.difficulty, False, time.gmtime(self.seconds_elapsed))
+
+    def __end_on_success(self):
+        for row in self.board:
+            for tile in row:
+                self.__unbind_tile(tile)
+                if tile.status is not TileStatus.SURE:
+                    tile.open(is_safe=True)
+        self.on_end(self.difficulty, True, time.gmtime(self.seconds_elapsed))
+
+    def __on_exit(self):
+        is_save = messagebox.askyesno("Minesweeper", "Save progress?")
+        self.on_stop(is_save)

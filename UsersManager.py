@@ -11,7 +11,7 @@ class UsersManager:
             with open('users.pickle', 'rb') as f:
                 self.users = pickle.load(f)
                 print(self.users)
-        except FileNotFoundError:
+        except:
             print('No saved users')
 
     def sign_in(self, login, password):
@@ -37,6 +37,9 @@ class UsersManager:
     def __new_user(self, login, password):
         user = User(login, password)
         self.users.append(user)
+        self.save()
+        return user
+
+    def save(self):
         with open('users.pickle', 'wb') as f:
             pickle.dump(self.users, f, pickle.HIGHEST_PROTOCOL)
-        return user

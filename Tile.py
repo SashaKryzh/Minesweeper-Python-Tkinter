@@ -17,16 +17,26 @@ class TileType(Enum):
 
 
 class Tile:
-    def __init__(self, frame, x, y):
-        self.images = TileImages().images
+    def __init__(self, x, y):
+        self.coords = x, y
 
+        self.status = TileStatus.CLEAR
         self.type = TileType.NOT_DETERMINED
         self.mines_around = 0
         self.is_opened = False
+        self.image_str = 'plain'
 
-        self.status = TileStatus.CLEAR
-        self.coords = x, y
-        self.button = tk.Label(frame, image=self.images['plain'], bd=1)
+        self.images = None
+        self.button = None
+
+    def init_button(self, frame):
+        self.images = TileImages()
+        self.button = tk.Label(frame, image=self.images.get(self.image_str, self.mines_around - 1), bd=1)
+
+    def clear_tk(self):
+        self.images = None
+        self.button.destroy()
+        self.button = None
 
     def open(self, is_safe=False):
         """
@@ -36,25 +46,25 @@ class Tile:
 
         if self.type == TileType.MINE:
             if is_safe:
-                image = self.images['mine']
+                self.image_str = 'mine'
             else:
-                image = self.images['detonated']
+                self.image_str = 'detonated'
         elif self.mines_around != 0:
-            image = self.images['numbers'][self.mines_around - 1]
+            self.image_str = 'numbers'
         else:
-            image = self.images['clicked']
-        self.button.configure(image=image)
+            self.image_str = 'clicked'
+        self.button.configure(image=self.images.get(self.image_str, self.mines_around - 1))
 
     def change_status(self, status):
         self.status = status
         if self.status == TileStatus.CLEAR:
-            image = self.images['plain']
+            self.image_str = 'plain'
         elif self.status == TileStatus.PROBABLY:
-            image = self.images['question']
+            self.image_str = 'question'
         else:
-            image = self.images['flag']
-        self.button.configure(image=image)
+            self.image_str = 'flag'
+        self.button.configure(image=self.images.get(self.image_str))
 
     def wrong_flag(self):
-        image = self.images['wrong']
-        self.button.configure(image=image)
+        self.image_str = 'wrong'
+        self.button.configure(image=self.images.get(self.image_str))
