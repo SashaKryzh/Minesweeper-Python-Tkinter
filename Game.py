@@ -2,6 +2,7 @@ import time
 import tkinter as tk
 
 from GameSession import GameSession, DifficultyLevel
+from LoginScreen import LoginScreen
 from Screens import Screens
 
 
@@ -14,11 +15,14 @@ class Game:
 
         self.game_session = None
 
-        self.__home_screen()
+        self.__login()
+
+    def __login(self):
+        self.frame = tk.Frame(self.window)
+        LoginScreen(self.frame, on_logged=self.__home_screen)
 
     def __home_screen(self):
-        if self.frame is not None:
-            self.frame.destroy()
+        self.frame.destroy()
         self.frame = tk.Frame(self.window)
         Screens.home_scr(self.frame,
                          on_new_game=self.__select_difficulty,
@@ -52,8 +56,12 @@ class Game:
         self.frame = tk.Frame(self.window)
         if is_win:
             self.save_result(difficulty, time_elapsed)
+        self.game_session = None
         Screens.end_of_game_scr(self.frame, is_win, time_elapsed, self.__home_screen)
 
     def __window_deleted(self):
         print('Closing')
         self.window.quit()
+
+    def save_result(self, difficulty, time_elapsed):
+        print('save result')
