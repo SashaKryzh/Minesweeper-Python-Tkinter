@@ -1,7 +1,7 @@
 import time
 import tkinter as tk
 
-from GameSession import DifficultyLevel
+from minesweeper.game.GameSession import DifficultyLevel
 
 
 class Screens:

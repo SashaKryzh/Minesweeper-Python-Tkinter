@@ -1,7 +1,7 @@
 import tkinter as tk
 from enum import IntEnum, Enum
 
-from TileImages import TileImages
+from minesweeper.helpers.TileImages import TileImages
 
 
 class TileStatus(IntEnum):

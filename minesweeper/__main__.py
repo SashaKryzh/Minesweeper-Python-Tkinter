@@ -1,8 +1,8 @@
 import tkinter as tk
-from Game import Game
+from minesweeper.game.Game import Game
 
 
-def main(name):
+def main():
     window = tk.Tk()
 
     window.title("Minesweeper")
@@ -14,4 +14,4 @@ def main(name):
 
 
 if __name__ == '__main__':
-    main('Minesweeper')
+    main()

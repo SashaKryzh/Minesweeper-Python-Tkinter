@@ -1,9 +1,9 @@
-from Tile import Tile, TileType, TileStatus
+from minesweeper.game.Tile import Tile, TileType, TileStatus
 import tkinter as tk
 import random
 from functools import partial
 from enum import Enum
-from GameStatsWidget import GameStatsWidgets
+from minesweeper.game.GameStatsWidget import GameStatsWidgets
 import time
 from tkinter import messagebox
 
@@ -132,7 +132,8 @@ class GameSession:
                 self.flags_correct += tile.type == TileType.MINE
                 if self.flags_correct == self.num_mines:
                     self.__end_on_success()
-                self.wdg_stats.update(self.flags_left)
+                else:
+                    self.wdg_stats.update(self.flags_left)
             else:
                 tile.change_status(TileStatus.CLEAR)
 

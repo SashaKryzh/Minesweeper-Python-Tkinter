@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-from User import User
+from minesweeper.auth.User import User
 
 
 class LoginScreen:

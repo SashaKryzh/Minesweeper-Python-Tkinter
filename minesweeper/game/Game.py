@@ -1,9 +1,9 @@
 import tkinter as tk
 
-from GameSession import GameSession
-from LoginScreen import LoginScreen
-from Screens import Screens
-from Auth import Auth
+from minesweeper.game.GameSession import GameSession
+from minesweeper.game.LoginScreen import LoginScreen
+from minesweeper.game.Screens import Screens
+from minesweeper.auth.Auth import Auth
 
 
 class Game:

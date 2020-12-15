@@ -1,14 +1,17 @@
-from User import User
+from minesweeper.auth.User import User
 import pickle
+import os
 
 
 class Auth:
     def __init__(self):
+        self.__path = 'minesweeper/data/users.pickle'
+
         self.current_user = None
         self.users = []
 
         try:
-            with open('users.pickle', 'rb') as f:
+            with open(self.__path, 'rb') as f:
                 self.users = pickle.load(f)
                 print(self.users)
         except:
@@ -17,11 +20,12 @@ class Auth:
     def __new_user(self, login, password):
         user = User(login, password)
         self.users.append(user)
-        self.save()
+        self.__save()
         return user
 
     def __save(self):
-        with open('users.pickle', 'wb') as f:
+        os.makedirs(os.path.dirname(self.__path), exist_ok=True)
+        with open(self.__path, 'wb') as f:
             pickle.dump(self.users, f, pickle.HIGHEST_PROTOCOL)
 
     def sign_in(self, login, password):
