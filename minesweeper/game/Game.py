@@ -12,6 +12,7 @@ class Game:
         self.window = window
         self.window.protocol('WM_DELETE_WINDOW', self.__window_deleted)
         self.__resize_window()
+        self.window.resizable(width=False, height=False)
 
         self.auth = Auth()
 
