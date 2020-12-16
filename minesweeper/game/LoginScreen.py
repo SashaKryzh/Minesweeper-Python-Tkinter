@@ -8,7 +8,8 @@ class LoginScreen:
     def __init__(self, root, auth, on_logged):
         self.root = root
 
-        self.master = tk.Frame(root)
+        self.master = None
+        self.frm_hint = None
         self.auth = auth
         self.on_logged = on_logged
 
@@ -18,6 +19,7 @@ class LoginScreen:
         self.__setup()
 
     def __setup(self):
+        self.master = tk.Frame(self.root)
         self.master.pack(expand=True)
 
         lbl = tk.Label(self.master, text='Хто ти?')
@@ -35,6 +37,11 @@ class LoginScreen:
 
         btn_login = tk.Button(self.master, text='Увійти / Зареєструватися', command=self.__on_login_tap)
         btn_login.grid(row=3, column=0, columnspan=2, sticky='ew')
+
+        self.frm_hint = tk.Frame(self.root)
+        self.frm_hint.pack(fill=tk.BOTH)
+        lbl_admin = tk.Label(self.frm_hint, text='admin - admin', fg='gray')
+        lbl_admin.pack(side=tk.BOTTOM, pady=4)
 
     def __on_login_tap(self):
         login = self.ent_login.get()
@@ -54,10 +61,10 @@ class LoginScreen:
 
     def __on_admin(self):
         self.master.destroy()
+        self.frm_hint.destroy()
         self.master = AdminScreen(self.root, self.auth, self.__on_back)
         self.master.pack(fill=tk.BOTH, expand=True)
 
     def __on_back(self):
         self.master.destroy()
-        self.master = tk.Frame(self.root)
         self.__setup()

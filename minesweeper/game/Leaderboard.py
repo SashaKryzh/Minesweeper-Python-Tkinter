@@ -11,6 +11,7 @@ class Leaderboard:
         self.auth = auth
 
         self.results = self.auth.get_all_results()
+        self.results.sort(key=lambda a: a[1].date, reverse=True)
         self.user_logins = set(map(lambda a: a[0].login, self.results))
 
         self.cmbb_user = None
@@ -51,5 +52,5 @@ class Leaderboard:
             r = result[1]
             win = 'ВИГРАВ' if r.is_win else 'ПРОГРАВ'
             t_string = time.strftime('%M:%S', r.time_elapsed)
-            string = '{} {} {} {}'.format(u.login, win, r.difficulty.value, t_string)
+            string = ' {}, {}, {}, {} '.format(u.login, win, r.difficulty.value, t_string)
             self.lstb_results.insert(tk.END, string)
