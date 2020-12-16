@@ -40,19 +40,3 @@ class Screens:
         btn_h.pack()
 
         master.pack(fill=tk.NONE, expand=True)
-
-    @staticmethod
-    def end_of_game_scr(master, is_win, time_elapsed, on_ok):
-        # TODO: translate
-        result_string = 'ПЕРЕМОГА' if is_win else 'ПРОГРАШ'
-        lbl_result = tk.Label(master, text=result_string)
-        lbl_result.pack()
-
-        time_string = time.strftime('%M:%S', time_elapsed)
-        lbl_time = tk.Label(master, text=time_string)
-        lbl_time.pack()
-
-        btn_ok = tk.Button(master, text='ОК', command=on_ok)
-        btn_ok.pack()
-
-        master.pack(fill=tk.NONE, expand=True)

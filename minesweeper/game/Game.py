@@ -89,17 +89,16 @@ class Game:
 
     def __end_of_game(self, difficulty, is_win, time_elapsed):
         self.frame.destroy()
-        self.frame = tk.Frame(self.window)
         self.auth.update_users_results(difficulty, is_win, time_elapsed)
         self.game_session = None
-        Screens.end_of_game_scr(self.frame, is_win, time_elapsed, self.__home_screen)
+        self.__home_screen()
 
     def __stop_of_game(self, is_save):
         self.frame.destroy()
         if is_save:
             self.game_session.clear_tk()
             self.auth.update_unfinished_game(self.game_session)
-            self.game_session = None
+        self.game_session = None
         self.__home_screen()
 
     def __resize_window(self, w=None, h=None):

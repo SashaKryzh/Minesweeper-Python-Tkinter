@@ -37,6 +37,7 @@ class GameSession:
 
         self.board = None
 
+        self.is_playing = None
         self.seconds_elapsed = 0
         self.is_mines_inited = False
         self.flags_left = self.num_mines
@@ -58,6 +59,8 @@ class GameSession:
                 tile.clear_tk()
 
     def start(self, master, on_end, on_stop):
+        self.is_playing = True
+
         self.master = master
         self.on_end = on_end
         self.on_stop = on_stop
@@ -69,8 +72,9 @@ class GameSession:
         def update_time():
             string = time.strftime('Час: %M:%S', time.gmtime(self.seconds_elapsed))
             lbl_time.configure(text=string)
-            self.seconds_elapsed += 1
-            lbl_time.after(1000, update_time)
+            if self.is_playing:
+                self.seconds_elapsed += 1
+                lbl_time.after(1000, update_time)
 
         frm = tk.Frame(self.master)
         frm.pack(side=tk.LEFT, fill=tk.Y, pady=2, padx=2)
@@ -222,6 +226,7 @@ class GameSession:
         return tiles
 
     def __end_on_mine(self):
+        self.is_playing = False
         for row in self.board:
             for tile in row:
                 self.__unbind_tile(tile)
@@ -231,15 +236,29 @@ class GameSession:
                     tile.open(is_safe=True)
                 elif tile.type is not TileType.MINE and tile.status is TileStatus.SURE:
                     tile.wrong_flag()
-        self.on_end(self.difficulty, False, time.gmtime(self.seconds_elapsed))
+
+        def f():
+            self.__display_message('ПРОГРАШ')
+            self.on_end(self.difficulty, False, time.gmtime(self.seconds_elapsed))
+        self.master.after(200, f)
 
     def __end_on_success(self):
+        self.is_playing = False
         for row in self.board:
             for tile in row:
                 self.__unbind_tile(tile)
                 if tile.status is not TileStatus.SURE:
                     tile.open(is_safe=True)
-        self.on_end(self.difficulty, True, time.gmtime(self.seconds_elapsed))
+
+        def f():
+            self.__display_message('ПЕРЕМОГА')
+            self.on_end(self.difficulty, True, time.gmtime(self.seconds_elapsed))
+        self.master.after(200, f)
+
+    def __display_message(self, text):
+        gmt = time.gmtime(self.seconds_elapsed)
+        time_string = time.strftime('%M:%S', gmt)
+        messagebox.showinfo('Сапер', '{}\nЧас: {}'.format(text, time_string))
 
     def __on_exit(self):
         is_save = messagebox.askyesno("Сапер", "Зберегти гру?")
