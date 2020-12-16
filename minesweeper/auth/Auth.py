@@ -1,4 +1,5 @@
 from minesweeper.auth.User import User
+from tkinter import messagebox
 import pickle
 import os
 
@@ -29,12 +30,6 @@ class Auth:
             pickle.dump(self.users, f, pickle.HIGHEST_PROTOCOL)
 
     def sign_in(self, login, password):
-        """
-        :param login:
-        :param password:
-        :return: Text if error or User if success
-        """
-
         if login == 'admin':
             if password == 'admin':
                 return 'admin'
@@ -42,18 +37,23 @@ class Auth:
                 return 'Невірний пароль admin-а'
 
         user = next((user for user in self.users if user.login == login), None)
+
         if user is not None:
             password_match = user.password == password
             if password_match:
                 self.current_user = user
-                print('Logged')
                 return self.current_user
             else:
                 return 'Невірний пароль'
         else:
-            self.current_user = self.__new_user(login, password)
-            print('New user')
-            return self.current_user
+            if messagebox.askyesno('Авторизація', 'Створити нового гравця: {}, з паролем: {}?'.format(login, password)):
+                self.current_user = self.__new_user(login, password)
+                return self.current_user
+            else:
+                return None
+
+    def sign_out(self):
+        self.current_user = None
 
     def delete_user(self, user):
         self.users.remove(user)

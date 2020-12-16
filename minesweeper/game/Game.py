@@ -21,6 +21,8 @@ class Game:
         self.__login()
 
     def __login(self):
+        if self.frame is not None:
+            self.frame.destroy()
         self.frame = tk.Frame(self.window)
         self.frame.pack(fill=tk.BOTH, expand=True)
         LoginScreen(self.frame, self.auth, on_logged=self.__home_screen)
@@ -55,7 +57,8 @@ class Game:
         Leaderboard(self.frame, self.auth, on_back=self.__home_screen)
 
     def __on_exit(self):
-        self.__window_deleted()
+        self.auth.sign_out()
+        self.__login()
 
     def __start_game(self, difficulty=None, is_continue=False):
         self.frame.destroy()

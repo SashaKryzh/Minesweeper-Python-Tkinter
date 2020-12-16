@@ -39,16 +39,17 @@ class LoginScreen:
     def __on_login_tap(self):
         login = self.ent_login.get()
         password = self.ent_password.get()
-        print('login: "{}" - password: "{}"'.format(login, password))
+
         if login == '' or password == '':
             messagebox.showerror('Авторизація', 'Поля не можуть бути порожніми')
             return
+
         res = self.auth.sign_in(login, password)
         if isinstance(res, User):
             self.on_logged()
         elif res == 'admin':
             self.__on_admin()
-        else:
+        elif isinstance(res, str):
             messagebox.showerror('Авторизація', res)
 
     def __on_admin(self):
