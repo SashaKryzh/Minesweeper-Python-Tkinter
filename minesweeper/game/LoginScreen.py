@@ -1,11 +1,14 @@
 import tkinter as tk
 from tkinter import messagebox
 from minesweeper.auth.User import User
+from minesweeper.game.AdminScreen import AdminScreen
 
 
 class LoginScreen:
-    def __init__(self, master, auth, on_logged):
-        self.master = master
+    def __init__(self, root, auth, on_logged):
+        self.root = root
+
+        self.master = tk.Frame(root)
         self.auth = auth
         self.on_logged = on_logged
 
@@ -43,6 +46,17 @@ class LoginScreen:
         res = self.auth.sign_in(login, password)
         if isinstance(res, User):
             self.on_logged()
+        elif res == 'admin':
+            self.__on_admin()
         else:
             messagebox.showerror('Login', res)
 
+    def __on_admin(self):
+        self.master.destroy()
+        self.master = AdminScreen(self.root, self.auth, self.__on_back)
+        self.master.pack(fill=tk.BOTH, expand=True)
+
+    def __on_back(self):
+        self.master.destroy()
+        self.master = tk.Frame(self.root)
+        self.__setup()

@@ -22,6 +22,7 @@ class Game:
 
     def __login(self):
         self.frame = tk.Frame(self.window)
+        self.frame.pack(fill=tk.BOTH, expand=True)
         LoginScreen(self.frame, self.auth, on_logged=self.__home_screen)
 
     def __home_screen(self):

@@ -34,6 +34,13 @@ class Auth:
         :param password:
         :return: Text if error or User if success
         """
+
+        if login == 'admin':
+            if password == 'admin':
+                return 'admin'
+            else:
+                return 'Wrong password'
+
         user = next((user for user in self.users if user.login == login), None)
         if user is not None:
             password_match = user.password == password
@@ -47,6 +54,10 @@ class Auth:
             self.current_user = self.__new_user(login, password)
             print('New user')
             return self.current_user
+
+    def delete_user(self, user):
+        self.users.remove(user)
+        self.__save()
 
     def update_unfinished_game(self, game_session):
         self.current_user.unfinished_game = game_session
