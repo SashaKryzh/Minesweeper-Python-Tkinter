@@ -14,9 +14,8 @@ class Auth:
         try:
             with open(self.__path, 'rb') as f:
                 self.users = pickle.load(f)
-                print(self.users)
         except:
-            print('No saved users')
+            print('"users.pickle" doesn\'t exists')
 
     def __new_user(self, login, password):
         user = User(login, password)

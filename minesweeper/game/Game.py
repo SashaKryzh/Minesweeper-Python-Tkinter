@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from minesweeper.game.GameSession import GameSession
+from minesweeper.game.GameSession import GameSession, DifficultyLevel
 from minesweeper.game.Leaderboard import Leaderboard
 from minesweeper.game.LoginScreen import LoginScreen
 from minesweeper.game.Screens import Screens
@@ -11,6 +11,7 @@ class Game:
     def __init__(self, window):
         self.window = window
         self.window.protocol('WM_DELETE_WINDOW', self.__window_deleted)
+        self.__resize_window()
 
         self.auth = Auth()
 
@@ -28,6 +29,8 @@ class Game:
         LoginScreen(self.frame, self.auth, on_logged=self.__home_screen)
 
     def __home_screen(self):
+        self.__resize_window()
+
         self.frame.destroy()
         self.frame = tk.Frame(self.window)
 
@@ -63,12 +66,19 @@ class Game:
     def __start_game(self, difficulty=None, is_continue=False):
         self.frame.destroy()
         self.frame = tk.Frame(self.window)
-        self.frame.pack()
+        self.frame.pack(fill=tk.BOTH)
 
         if is_continue:
             self.game_session = self.auth.current_user.unfinished_game
         else:
             self.game_session = GameSession(difficulty=difficulty)
+
+        if self.game_session.difficulty == DifficultyLevel.EASY:
+            self.__resize_window(w=400, h=250)
+        elif self.game_session.difficulty == DifficultyLevel.MEDIUM:
+            self.__resize_window(h=440)
+        else:
+            self.__resize_window(w=975, h=440)
 
         self.auth.update_unfinished_game(None)
         self.game_session.start(self.frame,
@@ -91,6 +101,11 @@ class Game:
             self.game_session = None
         self.__home_screen()
 
+    def __resize_window(self, w=None, h=None):
+        w = w if w is not None else 600
+        h = h if h is not None else 400
+        self.window.geometry('{}x{}'.format(w, h))
+
     def __window_deleted(self):
-        print('Closing')
+        print('Closing window')
         self.window.quit()

@@ -3,7 +3,6 @@ import tkinter as tk
 import random
 from functools import partial
 from enum import Enum
-from minesweeper.game.GameStatsWidget import GameStatsWidgets
 import time
 from tkinter import messagebox
 
@@ -43,17 +42,17 @@ class GameSession:
         self.flags_left = self.num_mines
         self.flags_correct = 0
 
-        self.wdg_stats = None
-
         self.master = None
         self.on_end = None
         self.on_stop = None
+
+        self.lbl_flags = None
 
     def clear_tk(self):
         self.master = None
         self.on_end = None
         self.on_stop = None
-        self.wdg_stats = None
+        self.lbl_flags = None
         for row in self.board:
             for tile in row:
                 tile.clear_tk()
@@ -63,30 +62,41 @@ class GameSession:
         self.on_end = on_end
         self.on_stop = on_stop
 
-        self.__top_widget()
+        self.__menu_widget()
         self.__board_widget()
-        self.__stats_widget()
 
-    def __top_widget(self):
+    def __menu_widget(self):
         def update_time():
-            string = time.strftime('%M:%S', time.gmtime(self.seconds_elapsed))
+            string = time.strftime('Час: %M:%S', time.gmtime(self.seconds_elapsed))
             lbl_time.configure(text=string)
             self.seconds_elapsed += 1
             lbl_time.after(1000, update_time)
 
-        f = tk.Frame(self.master)
-        f.pack()
+        frm = tk.Frame(self.master)
+        frm.pack(side=tk.LEFT, fill=tk.Y, pady=2, padx=2)
 
-        btn_exit = tk.Button(f, text='Вихід', command=self.__on_exit)
+        btn_exit = tk.Button(frm, text='Вихід', command=self.__on_exit, width=15)
         btn_exit.pack()
 
-        lbl_time = tk.Label(f)
-        lbl_time.pack()
+        tk.Frame(frm, height=15).pack()
+
+        lbl_time = tk.Label(frm, anchor=tk.W)
+        lbl_time.pack(fill=tk.X)
         update_time()
+
+        lbl_num_mines = tk.Label(frm, text='Мін: {}'.format(self.num_mines), anchor=tk.W)
+        lbl_num_mines.pack(fill=tk.X)
+
+        self.lbl_flags = tk.Label(frm, anchor=tk.W)
+        self.lbl_flags.pack(fill=tk.X)
+        self.__update_flags()
+
+    def __update_flags(self):
+        self.lbl_flags.configure(text='Залишилося флагів: {}'.format(self.flags_left))
 
     def __board_widget(self):
         frm_board = tk.Frame(self.master)
-        frm_board.pack()
+        frm_board.pack(side=tk.LEFT, padx=4, pady=2)
 
         if self.board is None:
             self.board = [[0 for j in range(self.num_cols)] for i in range(self.num_rows)]
@@ -106,11 +116,6 @@ class GameSession:
                 tile.button.bind('<Button-1>', act_on_left_tap)
                 tile.button.bind('<Button-2>', act_on_right_tap)
                 tile.button.bind('<Button-3>', act_on_right_tap)
-
-    def __stats_widget(self):
-        frm_stats = tk.Frame(self.master)
-        frm_stats.pack()
-        self.wdg_stats = GameStatsWidgets(frm_stats, self.num_mines, self.flags_left)
 
     def __on_lft_btn_tap(self, x, y, event=None):
         if self.board[y][x].status != TileStatus.CLEAR:
@@ -132,7 +137,7 @@ class GameSession:
                 if self.flags_correct == self.num_mines:
                     self.__end_on_success()
                 else:
-                    self.wdg_stats.update(self.flags_left)
+                    self.__update_flags()
             else:
                 tile.change_status(TileStatus.CLEAR)
 
@@ -140,7 +145,7 @@ class GameSession:
             tile.change_status(TileStatus.CLEAR)
             self.flags_left += 1
             self.flags_correct -= tile.type == TileType.MINE
-            self.wdg_stats.update(self.flags_left)
+            self.__update_flags()
 
     def __open_tile(self, x, y):
         tile = self.board[y][x]
