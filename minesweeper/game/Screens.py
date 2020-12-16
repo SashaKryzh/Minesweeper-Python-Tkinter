@@ -24,9 +24,9 @@ class Screens:
 
     @staticmethod
     def sel_difficulty_scr(master, on_select):
-        btn_e = tk.Button(master, text='Новачок', command=lambda: on_select(DifficultyLevel.EASY))
-        btn_m = tk.Button(master, text='Любитель', command=lambda: on_select(DifficultyLevel.MEDIUM))
-        btn_h = tk.Button(master, text='Професіонал', command=lambda: on_select(DifficultyLevel.HARD))
+        btn_e = tk.Button(master, text=DifficultyLevel.EASY.value, command=lambda: on_select(DifficultyLevel.EASY))
+        btn_m = tk.Button(master, text=DifficultyLevel.MEDIUM.value, command=lambda: on_select(DifficultyLevel.MEDIUM))
+        btn_h = tk.Button(master, text=DifficultyLevel.HARD.value, command=lambda: on_select(DifficultyLevel.HARD))
 
         btn_e.pack()
         btn_m.pack()

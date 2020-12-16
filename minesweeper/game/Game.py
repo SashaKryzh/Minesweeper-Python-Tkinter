@@ -1,6 +1,7 @@
 import tkinter as tk
 
 from minesweeper.game.GameSession import GameSession
+from minesweeper.game.Leaderboard import Leaderboard
 from minesweeper.game.LoginScreen import LoginScreen
 from minesweeper.game.Screens import Screens
 from minesweeper.auth.Auth import Auth
@@ -48,7 +49,9 @@ class Game:
         self.__start_game(is_continue=True)
 
     def __on_leaderboard(self):
-        print('leaderboard')
+        self.frame.destroy()
+        self.frame = tk.Frame(self.window)
+        Leaderboard(self.frame, self.auth, on_back=self.__home_screen)
 
     def __on_exit(self):
         self.__window_deleted()
@@ -72,8 +75,7 @@ class Game:
     def __end_of_game(self, difficulty, is_win, time_elapsed):
         self.frame.destroy()
         self.frame = tk.Frame(self.window)
-        if is_win:
-            self.save_result(difficulty, time_elapsed)
+        self.auth.update_users_results(difficulty, is_win, time_elapsed)
         self.game_session = None
         Screens.end_of_game_scr(self.frame, is_win, time_elapsed, self.__home_screen)
 
@@ -88,6 +90,3 @@ class Game:
     def __window_deleted(self):
         print('Closing')
         self.window.quit()
-
-    def save_result(self, difficulty, time_elapsed):
-        print('save result')

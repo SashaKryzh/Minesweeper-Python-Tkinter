@@ -51,3 +51,13 @@ class Auth:
     def update_unfinished_game(self, game_session):
         self.current_user.unfinished_game = game_session
         self.__save()
+
+    def update_users_results(self, difficulty, is_win, time_elapsed):
+        self.current_user.add_result(difficulty, is_win, time_elapsed)
+        self.__save()
+
+    def get_all_results(self):
+        results = []
+        for user in self.users:
+            results += map(lambda a: (user, a), user.last_results)
+        return results
