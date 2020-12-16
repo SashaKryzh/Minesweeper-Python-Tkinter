@@ -32,10 +32,9 @@ class GameSession:
             self.num_mines = 90
 
         # For testing
-        if True:
-            self.num_rows = 4
-            self.num_cols = 4
-            self.num_mines = 2
+        # self.num_rows = 4
+        # self.num_cols = 4
+        # self.num_mines = 2
 
         self.board = None
 

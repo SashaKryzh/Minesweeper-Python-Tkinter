@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 
 class TileImages(metaclass=SingletonMeta):
     def __init__(self):
-        self.image_size = 20
+        self.image_size = 25
 
         self.images = {
             "plain": self.__open_image("minesweeper/images/tile_plain.gif"),

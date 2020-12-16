@@ -22,20 +22,20 @@ class Leaderboard:
         self.master.pack(fill=tk.BOTH, expand=True)
 
         frm_left = tk.Frame(self.master)
-        frm_left.pack(side=tk.LEFT, fill=tk.BOTH)
+        frm_left.pack(side=tk.LEFT, fill=tk.Y)
 
-        btn_back = tk.Button(frm_left, text='Назад', command=on_back)
-        btn_back.grid(column=0, row=0, sticky=(tk.N, tk.E, tk.W))
+        btn_back = tk.Button(frm_left, text='Назад', command=on_back, width=15)
+        btn_back.grid(column=0, row=0, padx=2, pady=2)
 
         options = [self.ALL] + list(self.user_logins)
-        self.cmbb_user = ttk.Combobox(frm_left, values=options, state="readonly")
+        self.cmbb_user = ttk.Combobox(frm_left, values=options, state="readonly", width=15)
         self.cmbb_user.current(0)
         self.cmbb_user.bind("<<ComboboxSelected>>", self.__on_update_list)
-        self.cmbb_user.grid(column=0, row=1, sticky=(tk.N))
+        self.cmbb_user.grid(column=0, row=1, padx=2, pady=2)
 
-        self.lstb_results = tk.Listbox(self.master, height=22, width=37)
+        self.lstb_results = tk.Listbox(self.master, height=22, width=54)
         self.__on_update_list()
-        self.lstb_results.pack(side=tk.LEFT)
+        self.lstb_results.pack(side=tk.LEFT, padx=4)
 
     def __on_update_list(self, event=None):
         self.lstb_results.delete(0, tk.END)

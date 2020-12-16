@@ -34,7 +34,7 @@ class LoginScreen:
         self.ent_password.grid(row=2, column=1)
 
         btn_login = tk.Button(self.master, text='Увійти / Зареєструватися', command=self.__on_login_tap)
-        btn_login.grid(row=3, column=1, sticky='e')
+        btn_login.grid(row=3, column=0, columnspan=2, sticky='ew')
 
     def __on_login_tap(self):
         login = self.ent_login.get()

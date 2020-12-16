@@ -9,19 +9,16 @@ class AdminScreen(tk.Frame):
         self.auth = auth
 
         self.frm_left = tk.Frame(self)
-        self.frm_left.grid(column=0, row=0)
+        self.frm_left.pack(side=tk.LEFT, fill=tk.Y)
 
-        self.btn_back = tk.Button(self.frm_left, text='Назад', command=on_back)
-        self.btn_back.pack()
+        self.btn_back = tk.Button(self.frm_left, text='Назад', command=on_back, width=15)
+        self.btn_back.pack(pady=2, padx=2)
 
-        self.btn_delete = tk.Button(self.frm_left, text='Видалити', command=self.__on_delete)
-        self.btn_delete.pack()
+        self.btn_delete = tk.Button(self.frm_left, text='Видалити', command=self.__on_delete, width=15)
+        self.btn_delete.pack(pady=2, padx=2)
 
-        self.frm_right = tk.Frame(self)
-        self.frm_right.grid(column=1, row=0)
-
-        self.list = tk.Listbox(self.frm_right, selectmode=tk.SINGLE)
-        self.list.pack()
+        self.list = tk.Listbox(self, selectmode=tk.SINGLE, height=22, width=54)
+        self.list.pack(side=tk.LEFT, padx=4)
 
         self.__update_users()
 
