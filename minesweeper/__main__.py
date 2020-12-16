@@ -1,17 +1,11 @@
 import tkinter as tk
 from minesweeper.game.Game import Game
 
-
-def main():
+if __name__ == '__main__':
     window = tk.Tk()
-
-    window.title("Minesweeper")
+    window.title("Сапер")
     window.geometry('500x400')
 
-    game = Game(window)
+    Game(window)
 
     window.mainloop()
-
-
-if __name__ == '__main__':
-    main()

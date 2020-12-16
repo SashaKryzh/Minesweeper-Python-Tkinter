@@ -27,13 +27,13 @@ class AdminScreen(tk.Frame):
 
     def __update_users(self):
         for user in self.auth.users:
-            string = 'login: {}, pass: {}'.format(user.login, user.password)
+            string = 'Логін: {}, Пароль: {}'.format(user.login, user.password)
             self.list.insert(tk.END, string)
 
     def __on_delete(self):
         index = self.list.curselection()[0]
         user = self.auth.users[index]
-        is_delete = messagebox.askyesno("Minesweeper", "Delete user: {}?".format(user.login))
+        is_delete = messagebox.askyesno("Сапер", "Видалити: {}?".format(user.login))
         if is_delete:
             self.auth.delete_user(user)
             self.list.delete(index)

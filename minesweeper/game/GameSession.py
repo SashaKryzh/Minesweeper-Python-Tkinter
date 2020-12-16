@@ -78,7 +78,7 @@ class GameSession:
         f = tk.Frame(self.master)
         f.pack()
 
-        btn_exit = tk.Button(f, text='Exit', command=self.__on_exit)
+        btn_exit = tk.Button(f, text='Вихід', command=self.__on_exit)
         btn_exit.pack()
 
         lbl_time = tk.Label(f)
@@ -238,5 +238,5 @@ class GameSession:
         self.on_end(self.difficulty, True, time.gmtime(self.seconds_elapsed))
 
     def __on_exit(self):
-        is_save = messagebox.askyesno("Minesweeper", "Save progress?")
+        is_save = messagebox.askyesno("Сапер", "Зберегти гру?")
         self.on_stop(is_save)

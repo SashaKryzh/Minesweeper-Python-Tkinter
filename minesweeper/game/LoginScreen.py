@@ -20,20 +20,20 @@ class LoginScreen:
     def __setup(self):
         self.master.pack(expand=True)
 
-        lbl = tk.Label(self.master, text='Who are you?')
+        lbl = tk.Label(self.master, text='Хто ти?')
         lbl.grid(row=0, columnspan=2)
 
-        lbl_login = tk.Label(self.master, text='login: ')
+        lbl_login = tk.Label(self.master, text='Логін: ')
         self.ent_login = tk.Entry(self.master, width=20)
         lbl_login.grid(row=1, column=0, sticky='e')
         self.ent_login.grid(row=1, column=1)
 
-        lbl_password = tk.Label(self.master, text='password:')
+        lbl_password = tk.Label(self.master, text='Пароль:')
         self.ent_password = tk.Entry(self.master, width=20, show='*')
         lbl_password.grid(row=2, column=0, sticky='e')
         self.ent_password.grid(row=2, column=1)
 
-        btn_login = tk.Button(self.master, text='Login / Register', command=self.__on_login_tap)
+        btn_login = tk.Button(self.master, text='Увійти / Зареєструватися', command=self.__on_login_tap)
         btn_login.grid(row=3, column=1, sticky='e')
 
     def __on_login_tap(self):
@@ -41,7 +41,7 @@ class LoginScreen:
         password = self.ent_password.get()
         print('login: "{}" - password: "{}"'.format(login, password))
         if login == '' or password == '':
-            messagebox.showerror('Login', 'Fields can\'t be empty')
+            messagebox.showerror('Авторизація', 'Поля не можуть бути порожніми')
             return
         res = self.auth.sign_in(login, password)
         if isinstance(res, User):
@@ -49,7 +49,7 @@ class LoginScreen:
         elif res == 'admin':
             self.__on_admin()
         else:
-            messagebox.showerror('Login', res)
+            messagebox.showerror('Авторизація', res)
 
     def __on_admin(self):
         self.master.destroy()

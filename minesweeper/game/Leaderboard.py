@@ -5,7 +5,7 @@ import time
 
 class Leaderboard:
     def __init__(self, master, auth, on_back):
-        self.ALL = 'All'
+        self.ALL = 'Усі'
 
         self.master = master
         self.auth = auth

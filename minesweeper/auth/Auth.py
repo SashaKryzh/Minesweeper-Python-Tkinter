@@ -39,7 +39,7 @@ class Auth:
             if password == 'admin':
                 return 'admin'
             else:
-                return 'Wrong password'
+                return 'Невірний пароль admin-а'
 
         user = next((user for user in self.users if user.login == login), None)
         if user is not None:
@@ -49,7 +49,7 @@ class Auth:
                 print('Logged')
                 return self.current_user
             else:
-                return 'Wrong password'
+                return 'Невірний пароль'
         else:
             self.current_user = self.__new_user(login, password)
             print('New user')
