@@ -26,7 +26,7 @@ class Screens:
         master.pack(fill=tk.NONE, expand=True)
 
     @staticmethod
-    def sel_difficulty_scr(master, on_select):
+    def sel_difficulty_scr(master, on_select, on_back):
         def button(text, command):
             return tk.Button(master, text=text, command=command, width=20)
 
@@ -38,5 +38,10 @@ class Screens:
 
         btn_h = button(DifficultyLevel.HARD.value, lambda: on_select(DifficultyLevel.HARD))
         btn_h.pack()
+
+        tk.Frame(master, height=10).pack()
+
+        btn_back = button("Повернутися до меню", on_back)
+        btn_back.pack()
 
         master.pack(fill=tk.NONE, expand=True)

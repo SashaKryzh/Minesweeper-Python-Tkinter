@@ -50,7 +50,7 @@ class Game:
     def __on_new_game(self):
         self.frame.destroy()
         self.frame = tk.Frame(self.window)
-        Screens.sel_difficulty_scr(self.frame, self.__start_game)
+        Screens.sel_difficulty_scr(self.frame, self.__start_game, self.__home_screen)
 
     def __on_continue(self):
         self.__start_game(is_continue=True)
