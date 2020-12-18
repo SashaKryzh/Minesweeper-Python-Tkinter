@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import time
-
+import settings
 
 class Leaderboard:
     def __init__(self, master, auth, on_back):
@@ -25,7 +25,10 @@ class Leaderboard:
         frm_left = tk.Frame(self.master)
         frm_left.pack(side=tk.LEFT, fill=tk.Y)
 
-        btn_back = tk.Button(frm_left, text='Назад', command=on_back, width=15)
+        if settings.language.lower() == 'english':
+            btn_back = tk.Button(frm_left, text='Back', command=on_back, width=15)
+        if settings.language.lower() == 'russian':
+            btn_back = tk.Button(frm_left, text='Назад', command=on_back, width=15)
         btn_back.grid(column=0, row=0, padx=2, pady=2)
 
         options = [self.ALL] + list(self.user_logins)
@@ -50,7 +53,10 @@ class Leaderboard:
         for result in results:
             u = result[0]
             r = result[1]
-            win = 'ВИГРАВ' if r.is_win else 'ПРОГРАВ'
+            if settings.language.lower() == 'english':
+                win = 'WIN' if r.is_win else 'LOSS'
+            if settings.language.lower() == 'russian':
+                win = 'ВИГРАВ' if r.is_win else 'ПРОГРАВ'
             t_string = time.strftime('%M:%S', r.time_elapsed)
             string = ' {}, {}, {}, {} '.format(u.login, win, r.difficulty.value, t_string)
             self.lstb_results.insert(tk.END, string)

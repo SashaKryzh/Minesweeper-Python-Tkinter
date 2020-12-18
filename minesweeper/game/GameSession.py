@@ -75,7 +75,10 @@ class GameSession:
 
     def __menu_widget(self):
         def update_time():
-            string = time.strftime('Час: %M:%S', time.gmtime(self.seconds_elapsed))
+            if settings.language.lower() == 'english':
+                string = time.strftime('Time: %M:%S', time.gmtime(self.seconds_elapsed))
+            elif settings.language.lower() == 'russian':
+                string = time.strftime('Час: %M:%S', time.gmtime(self.seconds_elapsed))
             lbl_time.configure(text=string)
             if self.is_playing:
                 self.seconds_elapsed += 1
@@ -84,7 +87,11 @@ class GameSession:
         frm = tk.Frame(self.master)
         frm.pack(side=tk.LEFT, fill=tk.Y, pady=2, padx=2)
 
-        btn_exit = tk.Button(frm, text='Вихід', command=self.__on_exit, width=15)
+        if settings.language.lower() == 'english':
+            btn_exit = tk.Button(frm, text='Entrance', command=self.__on_exit, width=15)
+        elif settings.language.lower() == 'russian':
+            btn_exit = tk.Button(frm, text='Вихід', command=self.__on_exit, width=15)
+        
         btn_exit.pack()
 
         tk.Frame(frm, height=15).pack()
@@ -93,7 +100,10 @@ class GameSession:
         lbl_time.pack(fill=tk.X)
         update_time()
 
-        lbl_num_mines = tk.Label(frm, text='Мін: {}'.format(self.num_mines), anchor=tk.W)
+        if settings.language.lower() == 'english':
+            lbl_num_mines = tk.Label(frm, text='Min: {}'.format(self.num_mines), anchor=tk.W)
+        elif settings.language.lower() == 'russian':
+            lbl_num_mines = tk.Label(frm, text='Мін: {}'.format(self.num_mines), anchor=tk.W)
         lbl_num_mines.pack(fill=tk.X)
 
         self.lbl_flags = tk.Label(frm, anchor=tk.W)
@@ -101,7 +111,10 @@ class GameSession:
         self.__update_flags()
 
     def __update_flags(self):
-        self.lbl_flags.configure(text='Залишилося флагів: {}'.format(self.flags_left))
+        if settings.language.lower() == 'english':
+            self.lbl_flags.configure(text='Remaining flags: {}'.format(self.flags_left))
+        elif settings.language.lower() == 'russian':
+            self.lbl_flags.configure(text='Залишилося флагів: {}'.format(self.flags_left))
 
     def __board_widget(self):
         frm_board = tk.Frame(self.master)
@@ -243,7 +256,10 @@ class GameSession:
                     tile.wrong_flag()
 
         def f():
-            self.__display_message('ПРОГРАШ')
+            if settings.language.lower() == 'english':
+                self.__display_message('LOSS')
+            elif settings.language.lower() == 'russian':
+                self.__display_message('ПРОГРАШ')
             self.on_end(self.difficulty, False, time.gmtime(self.seconds_elapsed))
         self.master.after(200, f)
 
@@ -256,15 +272,24 @@ class GameSession:
                     tile.open(is_safe=True)
 
         def f():
-            self.__display_message('ПЕРЕМОГА')
+            if settings.language.lower() == 'english':
+                self.__display_message('VICTORY')
+            elif settings.language.lower() == 'russian':
+                self.__display_message('ПЕРЕМОГА')
             self.on_end(self.difficulty, True, time.gmtime(self.seconds_elapsed))
         self.master.after(200, f)
 
     def __display_message(self, text):
         gmt = time.gmtime(self.seconds_elapsed)
         time_string = time.strftime('%M:%S', gmt)
-        messagebox.showinfo('Сапер', '{}\nЧас: {}'.format(text, time_string))
+        if settings.language.lower() == 'english':
+            messagebox.showinfo('Сапер', '{}\nTime: {}'.format(text, time_string))
+        elif settings.language.lower() == 'russian':
+            messagebox.showinfo('Сапер', '{}\nЧас: {}'.format(text, time_string))
 
     def __on_exit(self):
-        is_save = messagebox.askyesno("Сапер", "Зберегти гру?")
+        if settings.language.lower() == 'english':
+            is_save = messagebox.askyesno("Сапер", "Save game?")
+        elif settings.language.lower() == 'russian':
+            is_save = messagebox.askyesno("Сапер", "Зберегти гру?")
         self.on_stop(is_save)
