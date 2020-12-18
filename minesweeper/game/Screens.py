@@ -39,7 +39,9 @@ class Screens:
         btn_h = button(DifficultyLevel.HARD.value, lambda: on_select(DifficultyLevel.HARD))
         btn_h.pack()
 
-        btn_back = button("повернутися до меню", on_back)
+        tk.Frame(master, height=10).pack()
+
+        btn_back = button("Повернутися до меню", on_back)
         btn_back.pack()
 
         master.pack(fill=tk.NONE, expand=True)
