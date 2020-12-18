@@ -5,12 +5,17 @@ from functools import partial
 from enum import Enum
 import time
 from tkinter import messagebox
-
+import settings
 
 class DifficultyLevel(Enum):
-    EASY = 'Новачок'
-    MEDIUM = 'Любитель'
-    HARD = 'Професіонал'
+    if settings.language.lower() == 'english':
+        EASY = 'Easy'
+        MEDIUM = 'Medium'
+        HARD = 'Hard'
+    elif settings.language.lower() == 'russian':
+        EASY = 'Новачок'
+        MEDIUM = 'Любитель'
+        HARD = 'Професіонал'
 
 
 class GameSession:

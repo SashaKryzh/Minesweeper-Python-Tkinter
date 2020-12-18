@@ -2,7 +2,7 @@ from minesweeper.auth.User import User
 from tkinter import messagebox
 import pickle
 import os
-
+import settings
 
 class Auth:
     def __init__(self):
@@ -33,7 +33,10 @@ class Auth:
             if password == 'admin':
                 return 'admin'
             else:
-                return 'Невірний пароль admin-а'
+                if settings.language.lower() == 'english':
+                    return 'Invalid admin password'
+                elif settings.language.lower() == 'russian':
+                    return 'Невірний пароль admin-а'
 
         user = next((user for user in self.users if user.login == login), None)
 
@@ -43,13 +46,23 @@ class Auth:
                 self.current_user = user
                 return self.current_user
             else:
-                return 'Невірний пароль'
+                if settings.language.lower() == 'english':
+                    return 'Invalid password'
+                elif settings.language.lower() == 'russian':
+                    return 'Невірний пароль'
         else:
-            if messagebox.askyesno('Авторизація', 'Створити нового гравця: {}, з паролем: {}?'.format(login, password)):
-                self.current_user = self.__new_user(login, password)
-                return self.current_user
-            else:
-                return None
+            if settings.language.lower() == 'english':
+                if messagebox.askyesno('Authorization', 'Create a new player: {}, with password: {}?'.format(login, password)):
+                    self.current_user = self.__new_user(login, password)
+                    return self.current_user
+                else:
+                    return None
+            elif settings.language.lower() == 'russian':
+                if messagebox.askyesno('Авторизація', 'Створити нового гравця: {}, з паролем: {}?'.format(login, password)):
+                    self.current_user = self.__new_user(login, password)
+                    return self.current_user
+                else:
+                    return None
 
     def sign_out(self):
         self.current_user = None

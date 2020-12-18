@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from minesweeper.auth.User import User
 from minesweeper.game.AdminScreen import AdminScreen
-
+import settings
 
 class LoginScreen:
     def __init__(self, root, auth, on_logged):
@@ -22,22 +22,30 @@ class LoginScreen:
         self.master = tk.Frame(self.root)
         self.master.pack(expand=True)
 
-        lbl = tk.Label(self.master, text='Хто ти?')
+        if settings.language.lower() == 'english':
+            lbl = tk.Label(self.master, text='Who are you?')
+            lbl_login = tk.Label(self.master, text='Login: ')
+            lbl_password = tk.Label(self.master, text='Password:')
+            btn_login = tk.Button(self.master, text='Login / Register', command=self.__on_login_tap)
+        elif settings.language.lower() == 'russian':
+            lbl = tk.Label(self.master, text='Хто ти?')
+            lbl_login = tk.Label(self.master, text='Логін: ')
+            lbl_password = tk.Label(self.master, text='Пароль:')
+            btn_login = tk.Button(self.master, text='Увійти / Зареєструватися', command=self.__on_login_tap)
+            
+
         lbl.grid(row=0, columnspan=2)
 
-        lbl_login = tk.Label(self.master, text='Логін: ')
         self.ent_login = tk.Entry(self.master, width=20)
         lbl_login.grid(row=1, column=0, sticky='e')
         self.ent_login.grid(row=1, column=1)
 
-        lbl_password = tk.Label(self.master, text='Пароль:')
         self.ent_password = tk.Entry(self.master, width=20, show='*')
         lbl_password.grid(row=2, column=0, sticky='e')
         self.ent_password.grid(row=2, column=1)
 
-        btn_login = tk.Button(self.master, text='Увійти / Зареєструватися', command=self.__on_login_tap)
         btn_login.grid(row=3, column=0, columnspan=2, sticky='ew')
-
+ 
         self.frm_hint = tk.Frame(self.root)
         self.frm_hint.pack(fill=tk.BOTH)
         lbl_admin = tk.Label(self.frm_hint, text='admin - admin', fg='gray')
@@ -48,7 +56,10 @@ class LoginScreen:
         password = self.ent_password.get()
 
         if login == '' or password == '':
-            messagebox.showerror('Авторизація', 'Поля не можуть бути порожніми')
+            if settings.language.lower() == 'english':
+                messagebox.showerror('Authorization', 'Fields cannot be empty')
+            elif settings.language.lower() == 'russian':
+                messagebox.showerror('Авторизація', 'Поля не можуть бути порожніми')
             return
 
         res = self.auth.sign_in(login, password)
@@ -57,7 +68,10 @@ class LoginScreen:
         elif res == 'admin':
             self.__on_admin()
         elif isinstance(res, str):
-            messagebox.showerror('Авторизація', res)
+            if settings.language.lower() == 'english':
+                messagebox.showerror('Authorization', res)
+            elif settings.language.lower() == 'russian':
+                messagebox.showerror('Авторизація', res)
 
     def __on_admin(self):
         self.master.destroy()
