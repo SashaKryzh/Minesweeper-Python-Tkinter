@@ -5,18 +5,27 @@ from functools import partial
 from enum import Enum
 import time
 from tkinter import messagebox
+import settings
+from minesweeper.languages.language import text_messages
 
 
 class DifficultyLevel(Enum):
-    EASY = 'Новачок'
-    MEDIUM = 'Любитель'
-    HARD = 'Професіонал'
+    if settings.language.lower() == 'en':
+        EASY = 'Easy'
+        MEDIUM = 'Medium'
+        HARD = 'Hard'
+    elif settings.language.lower() == 'ur':
+        EASY = 'Новачок'
+        MEDIUM = 'Любитель'
+        HARD = 'Професіонал'
 
 
 class GameSession:
     def __init__(self, difficulty):
         self.difficulty = difficulty
 
+        self.text_messages = text_messages
+        
         if difficulty is DifficultyLevel.EASY:
             self.num_rows = 9
             self.num_cols = 9
@@ -70,7 +79,7 @@ class GameSession:
 
     def __menu_widget(self):
         def update_time():
-            string = time.strftime('Час: %M:%S', time.gmtime(self.seconds_elapsed))
+            string = time.strftime(self.text_messages[settings.language.lower()].update_time.time + ': %M:%S', time.gmtime(self.seconds_elapsed))
             lbl_time.configure(text=string)
             if self.is_playing:
                 self.seconds_elapsed += 1
@@ -79,7 +88,8 @@ class GameSession:
         frm = tk.Frame(self.master)
         frm.pack(side=tk.LEFT, fill=tk.Y, pady=2, padx=2)
 
-        btn_exit = tk.Button(frm, text='Вихід', command=self.__on_exit, width=15)
+        btn_exit = tk.Button(frm, text=self.text_messages[settings.language.lower()].menu_widget.entrance, command=self.__on_exit, width=15)
+        
         btn_exit.pack()
 
         tk.Frame(frm, height=15).pack()
@@ -88,7 +98,7 @@ class GameSession:
         lbl_time.pack(fill=tk.X)
         update_time()
 
-        lbl_num_mines = tk.Label(frm, text='Мін: {}'.format(self.num_mines), anchor=tk.W)
+        lbl_num_mines = tk.Label(frm, text= '{} :{}'.format(self.text_messages[settings.language.lower()].menu_widget.mine,self.num_mines), anchor=tk.W)
         lbl_num_mines.pack(fill=tk.X)
 
         self.lbl_flags = tk.Label(frm, anchor=tk.W)
@@ -96,7 +106,7 @@ class GameSession:
         self.__update_flags()
 
     def __update_flags(self):
-        self.lbl_flags.configure(text='Залишилося флагів: {}'.format(self.flags_left))
+        self.lbl_flags.configure(text='{}: {}'.format(self.text_messages[settings.language.lower()].update_flags, self.flags_left))
 
     def __board_widget(self):
         frm_board = tk.Frame(self.master)
@@ -238,7 +248,7 @@ class GameSession:
                     tile.wrong_flag()
 
         def f():
-            self.__display_message('ПРОГРАШ')
+            self.__display_message(self.text_messages[settings.language.lower()].end_on_mine)
             self.on_end(self.difficulty, False, time.gmtime(self.seconds_elapsed))
         self.master.after(200, f)
 
@@ -251,15 +261,15 @@ class GameSession:
                     tile.open(is_safe=True)
 
         def f():
-            self.__display_message('ПЕРЕМОГА')
+            self.__display_message(self.text_messages[settings.language.lower()].end_on_success)
             self.on_end(self.difficulty, True, time.gmtime(self.seconds_elapsed))
         self.master.after(200, f)
 
     def __display_message(self, text):
         gmt = time.gmtime(self.seconds_elapsed)
         time_string = time.strftime('%M:%S', gmt)
-        messagebox.showinfo('Сапер', '{}\nЧас: {}'.format(text, time_string))
+        messagebox.showinfo('Сапер', '{}\n{}: {}'.format(text, self.text_messages[settings.language.lower()].update_time.time, time_string))
 
     def __on_exit(self):
-        is_save = messagebox.askyesno("Сапер", "Зберегти гру?")
+        is_save = messagebox.askyesno("Сапер", self.text_messages[settings.language.lower()].on_exit)
         self.on_stop(is_save)

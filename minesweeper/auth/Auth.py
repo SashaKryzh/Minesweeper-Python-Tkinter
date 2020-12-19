@@ -2,7 +2,8 @@ from minesweeper.auth.User import User
 from tkinter import messagebox
 import pickle
 import os
-
+import settings
+from minesweeper.languages.language import text_messages
 
 class Auth:
     def __init__(self):
@@ -11,6 +12,7 @@ class Auth:
         self.current_user = None
         self.users = []
 
+        self.text_messages = text_messages
         try:
             with open(self.__path, 'rb') as f:
                 self.users = pickle.load(f)
@@ -33,7 +35,7 @@ class Auth:
             if password == 'admin':
                 return 'admin'
             else:
-                return 'Невірний пароль admin-а'
+                return self.text_messages[settings.language.lower()].auth.sign_in.invalid_admin_password
 
         user = next((user for user in self.users if user.login == login), None)
 
@@ -43,9 +45,9 @@ class Auth:
                 self.current_user = user
                 return self.current_user
             else:
-                return 'Невірний пароль'
+                return self.text_messages[settings.language.lower()].auth.sign_in.invalid_password
         else:
-            if messagebox.askyesno('Авторизація', 'Створити нового гравця: {}, з паролем: {}?'.format(login, password)):
+            if messagebox.askyesno(self.text_messages[settings.language.lower()].auth.sign_in.authorization, '{}{}{}{}?'.format(self.text_messages[settings.language.lower()].auth.sign_in.create_new_player, login, self.text_messages[settings.language.lower()].auth.sign_in.with_password, password)):
                 self.current_user = self.__new_user(login, password)
                 return self.current_user
             else:

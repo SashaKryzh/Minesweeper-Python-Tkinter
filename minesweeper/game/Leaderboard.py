@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 import time
-
+import settings
+from minesweeper.languages.language import text_messages
 
 class Leaderboard:
     def __init__(self, master, auth, on_back):
@@ -17,6 +18,8 @@ class Leaderboard:
         self.cmbb_user = None
         self.lstb_results = None
 
+        self.text_messages = text_messages
+
         self.__setup(on_back)
 
     def __setup(self, on_back):
@@ -25,7 +28,8 @@ class Leaderboard:
         frm_left = tk.Frame(self.master)
         frm_left.pack(side=tk.LEFT, fill=tk.Y)
 
-        btn_back = tk.Button(frm_left, text='Назад', command=on_back, width=15)
+
+        btn_back = tk.Button(frm_left, text=self.text_messages[settings.language.lower()].leader_board.back, command=on_back, width=15)
         btn_back.grid(column=0, row=0, padx=2, pady=2)
 
         options = [self.ALL] + list(self.user_logins)
@@ -50,7 +54,7 @@ class Leaderboard:
         for result in results:
             u = result[0]
             r = result[1]
-            win = 'ВИГРАВ' if r.is_win else 'ПРОГРАВ'
+            win = self.text_messages[settings.language.lower()].leader_board.win if r.is_win else self.text_messages[settings.language.lower()].leader_board.loss
             t_string = time.strftime('%M:%S', r.time_elapsed)
             string = ' {}, {}, {}, {} '.format(u.login, win, r.difficulty.value, t_string)
             self.lstb_results.insert(tk.END, string)
