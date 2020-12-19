@@ -3,6 +3,7 @@ from tkinter import messagebox
 from minesweeper.auth.User import User
 from minesweeper.game.AdminScreen import AdminScreen
 import settings
+from minesweeper.languages.language import text_messages
 
 class LoginScreen:
     def __init__(self, root, auth, on_logged):
@@ -16,22 +17,18 @@ class LoginScreen:
         self.ent_login = None
         self.ent_password = None
 
+        self.text_messages = text_messages
+
         self.__setup()
 
     def __setup(self):
         self.master = tk.Frame(self.root)
         self.master.pack(expand=True)
 
-        if settings.language.lower() == 'english':
-            lbl = tk.Label(self.master, text='Who are you?')
-            lbl_login = tk.Label(self.master, text='Login: ')
-            lbl_password = tk.Label(self.master, text='Password:')
-            btn_login = tk.Button(self.master, text='Login / Register', command=self.__on_login_tap)
-        elif settings.language.lower() == 'russian':
-            lbl = tk.Label(self.master, text='Хто ти?')
-            lbl_login = tk.Label(self.master, text='Логін: ')
-            lbl_password = tk.Label(self.master, text='Пароль:')
-            btn_login = tk.Button(self.master, text='Увійти / Зареєструватися', command=self.__on_login_tap)
+        lbl = tk.Label(self.master, text=self.text_messages[settings.language.lower()].login_screen.setup.who_are_you)
+        lbl_login = tk.Label(self.master, text=self.text_messages[settings.language.lower()].login_screen.setup.login)
+        lbl_password = tk.Label(self.master, text=self.text_messages[settings.language.lower()].login_screen.setup.password)
+        btn_login = tk.Button(self.master, text=self.text_messages[settings.language.lower()].login_screen.setup.login_register, command=self.__on_login_tap)
             
 
         lbl.grid(row=0, columnspan=2)
@@ -55,11 +52,8 @@ class LoginScreen:
         login = self.ent_login.get()
         password = self.ent_password.get()
 
-        if login == '' or password == '':
-            if settings.language.lower() == 'english':
-                messagebox.showerror('Authorization', 'Fields cannot be empty')
-            elif settings.language.lower() == 'russian':
-                messagebox.showerror('Авторизація', 'Поля не можуть бути порожніми')
+        if login == '' or password == '':            
+            messagebox.showerror(self.text_messages[settings.language.lower()].login_screen.on_login_tap.authorization, self.text_messages[settings.language.lower()].on_login_tap.empty_fields)
             return
 
         res = self.auth.sign_in(login, password)
@@ -68,10 +62,7 @@ class LoginScreen:
         elif res == 'admin':
             self.__on_admin()
         elif isinstance(res, str):
-            if settings.language.lower() == 'english':
-                messagebox.showerror('Authorization', res)
-            elif settings.language.lower() == 'russian':
-                messagebox.showerror('Авторизація', res)
+            messagebox.showerror(self.text_messages[settings.language.lower()].login_screen.on_login_tap.authorization, res)
 
     def __on_admin(self):
         self.master.destroy()

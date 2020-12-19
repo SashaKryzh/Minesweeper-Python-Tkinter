@@ -3,6 +3,7 @@ from tkinter import messagebox
 import pickle
 import os
 import settings
+from minesweeper.languages.language import text_messages
 
 class Auth:
     def __init__(self):
@@ -11,6 +12,7 @@ class Auth:
         self.current_user = None
         self.users = []
 
+        self.text_messages = text_messages
         try:
             with open(self.__path, 'rb') as f:
                 self.users = pickle.load(f)
@@ -33,10 +35,7 @@ class Auth:
             if password == 'admin':
                 return 'admin'
             else:
-                if settings.language.lower() == 'english':
-                    return 'Invalid admin password'
-                elif settings.language.lower() == 'russian':
-                    return 'Невірний пароль admin-а'
+                return self.text_messages[settings.language.lower()].auth.sign_in.invalid_admin_password
 
         user = next((user for user in self.users if user.login == login), None)
 
@@ -46,23 +45,13 @@ class Auth:
                 self.current_user = user
                 return self.current_user
             else:
-                if settings.language.lower() == 'english':
-                    return 'Invalid password'
-                elif settings.language.lower() == 'russian':
-                    return 'Невірний пароль'
+                return self.text_messages[settings.language.lower()].auth.sign_in.invalid_password
         else:
-            if settings.language.lower() == 'english':
-                if messagebox.askyesno('Authorization', 'Create a new player: {}, with password: {}?'.format(login, password)):
-                    self.current_user = self.__new_user(login, password)
-                    return self.current_user
-                else:
-                    return None
-            elif settings.language.lower() == 'russian':
-                if messagebox.askyesno('Авторизація', 'Створити нового гравця: {}, з паролем: {}?'.format(login, password)):
-                    self.current_user = self.__new_user(login, password)
-                    return self.current_user
-                else:
-                    return None
+            if messagebox.askyesno(self.text_messages[settings.language.lower()].auth.sign_in.authorization, '{}{}{}{}?'.format(self.text_messages[settings.language.lower()].auth.sign_in.create_new_player, login, self.text_messages[settings.language.lower()].auth.sign_in.with_password, password)):
+                self.current_user = self.__new_user(login, password)
+                return self.current_user
+            else:
+                return None
 
     def sign_out(self):
         self.current_user = None

@@ -1,1 +1,1 @@
-language="English" # Or "Russian"
+language="en"
